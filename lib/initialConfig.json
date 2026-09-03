@@ -1,0 +1,104 @@
+{
+  "categories": [
+    {
+      "id": "cat-beauty",
+      "navLabel": "Beauty",
+      "tag": "Reels",
+      "title": "Beauty",
+      "layout": "reel",
+      "clips": [
+        "/media/beauty/abroad-1.mp4",
+        "/media/beauty/abroad-2.mp4",
+        "/media/beauty/abroad-3.mp4",
+        "/media/beauty/abroad-4.mp4"
+      ]
+    },
+    {
+      "id": "cat-fashion",
+      "navLabel": "Fashion",
+      "tag": "Reels",
+      "title": "Fashion",
+      "layout": "reel",
+      "clips": [
+        "/media/fashion/abroad/greencontinue-1.mp4",
+        "/media/fashion/abroad/greencontinue-2.mp4",
+        "/media/fashion/abroad/greencontinue-3.mp4",
+        "/media/fashion/abroad/greencontinue-4.mp4"
+      ]
+    },
+    {
+      "id": "cat-living",
+      "navLabel": "Lifestyle",
+      "tag": "Reels",
+      "title": "Lifestyle",
+      "layout": "reel",
+      "clips": []
+    },
+    {
+      "id": "cat-travel",
+      "navLabel": "Travel & Tourism",
+      "tag": "Youtube",
+      "title": "Travel & Tourism",
+      "layout": "travel",
+      "clips": [
+        "/media/travel-tourism/abroad/reichan.mp4",
+        "/media/travel-tourism/abroad/phatthararwee.mp4",
+        "/media/travel-tourism/abroad/yun-ling-he.mp4",
+        "/media/travel-tourism/abroad/kanaka.mp4"
+      ]
+    },
+    {
+      "id": "cat-fnb",
+      "navLabel": "F&B",
+      "tag": "Reels",
+      "title": "F&B",
+      "layout": "reel",
+      "clips": []
+    },
+    {
+      "id": "cat-artist",
+      "navLabel": "Artist Promotion",
+      "tag": "Reels",
+      "title": "Artist Promotion",
+      "layout": "reel",
+      "clips": [
+        "/media/artist-promotion/%EB%B6%81%EB%AF%B8/clip-1.mp4",
+        "/media/artist-promotion/%EB%B6%81%EB%AF%B8/clip-2.mp4",
+        "/media/artist-promotion/%EB%B6%81%EB%AF%B8/clip-3.mp4",
+        "/media/artist-promotion/%EB%B6%81%EB%AF%B8/clip-4.mp4"
+      ]
+    },
+    {
+      "id": "cat-celebrity",
+      "navLabel": "Celebrity & Magazine",
+      "tag": "Reels",
+      "title": "Celebrity & Magazine",
+      "layout": "reel",
+      "clips": []
+    },
+    {
+      "id": "cat-health",
+      "navLabel": "Family & Kids",
+      "tag": "Reels",
+      "title": "Family & Kids",
+      "layout": "reel",
+      "clips": []
+    },
+    {
+      "id": "cat-medical",
+      "navLabel": "Medical",
+      "tag": "Reels",
+      "title": "Medical",
+      "layout": "reel",
+      "clips": []
+    },
+    {
+      "id": "cat-popup",
+      "navLabel": "Offline",
+      "tag": "Reels",
+      "title": "Offline",
+      "layout": "reel",
+      "clips": []
+    }
+  ]
+}

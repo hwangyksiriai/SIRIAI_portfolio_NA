@@ -1,0 +1,21 @@
+.vercel
+node_modules/
+.next/
+.env.local
+/포트폴리오_pdf.pdf
+/image/
+/beauty/
+/Living & Personal Care/
+/Fashion/
+/Travel & Tourism/
+/F&B/
+/Artist Promotion/
+/Celebrity & Magazine/
+/Health & Wellness/
+/media/beauty_abroad/
+
+.env*
+/media/
+/SIRIAI Portfolio.dc.html
+/심볼-샘플(반전).png
+/하얀로고.png
