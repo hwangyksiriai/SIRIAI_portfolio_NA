@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { upload } from '@vercel/blob/client';
+import { baseCategoryId, pageNumber, pageLabel } from '@/lib/categoryIds';
 
 export default function AdminPage() {
   const [config, setConfig] = useState(null);
@@ -47,6 +48,49 @@ export default function AdminPage() {
       }
       return next;
     });
+  }
+
+  /* One page fits four clips, so a category with more work than that needs
+     pages after the first. A new one inherits the category's tag, title and
+     layout, stays out of the top nav, and slots in after the last page of its
+     own category so the deck order stays grouped. */
+  function addPage() {
+    const base = baseCategoryId(selectedId);
+    const pages = config.categories.filter((c) => baseCategoryId(c.id) === base);
+    const first = pages.find((c) => c.id === base);
+    const page = {
+      id: `${base}-${Math.max(...pages.map((c) => pageNumber(c.id))) + 1}`,
+      navLabel: first.navLabel,
+      tag: first.tag,
+      title: first.title,
+      layout: first.layout,
+      hideFromNav: true,
+      clips: [],
+    };
+    setConfig((prev) => {
+      const next = structuredClone(prev);
+      let after = -1;
+      next.categories.forEach((c, i) => { if (baseCategoryId(c.id) === base) after = i; });
+      next.categories.splice(after + 1, 0, page);
+      return next;
+    });
+    setSelectedId(page.id);
+    setSelectedRegionKey(null);
+  }
+
+  /* Only pages after the first can go: the first page is the category itself,
+     which lives in the code. */
+  function removePage() {
+    const target = config.categories.find((c) => c.id === selectedId);
+    if (!target || pageNumber(target.id) === 1) return;
+    const count = (target.clips || []).length;
+    if (count && !confirm(`이 페이지의 영상 ${count}개도 함께 사라집니다. 삭제할까요?`)) return;
+    setConfig((prev) => ({
+      ...prev,
+      categories: prev.categories.filter((c) => c.id !== target.id),
+    }));
+    setSelectedId(baseCategoryId(target.id));
+    setSelectedRegionKey(null);
   }
 
   function updateCategoryTitle(title) {
@@ -192,12 +236,13 @@ export default function AdminPage() {
             onDrop={() => onSidebarDrop(cat.id)}
             style={{
               ...styles.navItem,
+              ...(pageNumber(cat.id) > 1 ? styles.navItemContinuation : {}),
               ...(cat.id === selectedId ? styles.navItemActive : {}),
               ...(cat.id === dragOverCatId ? styles.navItemDragOver : {}),
             }}
           >
             <span style={styles.navItemIdx}>{String(i + 1).padStart(2, '0')}</span>
-            {cat.navLabel}
+            {pageLabel(cat)}
           </button>
         ))}
         <div style={{ flex: 1 }} />
@@ -213,6 +258,10 @@ export default function AdminPage() {
           />
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {savedAt && <span style={styles.savedNote}>저장됨 {savedAt}</span>}
+            {pageNumber(selectedId) > 1 && (
+              <button onClick={removePage} style={styles.pageBtn}>페이지 삭제</button>
+            )}
+            <button onClick={addPage} style={styles.pageBtn}>+ 페이지 추가</button>
             <button onClick={onSave} disabled={saving} style={styles.saveBtn}>
               {saving ? '저장 중...' : '저장'}
             </button>
@@ -288,6 +337,8 @@ const styles = {
   logoutBtn: { background: 'transparent', border: '1px solid #262019', color: '#948e82', padding: '8px 10px', borderRadius: 8, cursor: 'pointer', fontSize: 12 },
   main: { flex: 1, padding: 28, overflowY: 'auto' },
   topBar: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, gap: 16 },
+  navItemContinuation: { paddingLeft: 34, opacity: .8 },
+  pageBtn: { background: 'transparent', border: '1px solid #262019', color: '#948e82', padding: '8px 14px', borderRadius: 6, cursor: 'pointer', fontSize: 13, whiteSpace: 'nowrap' },
   titleInput: { fontSize: 22, fontWeight: 700, background: 'transparent', border: 'none', color: '#f2ede4', borderBottom: '1px solid #262019', padding: '4px 0', flex: 1 },
   savedNote: { fontSize: 12, color: '#948e82' },
   saveBtn: { background: '#c98a3f', border: 'none', color: '#0a0908', fontWeight: 600, padding: '8px 18px', borderRadius: 8, cursor: 'pointer', fontSize: 13 },
