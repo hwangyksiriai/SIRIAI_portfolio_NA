@@ -9,6 +9,14 @@
       "clips": []
     },
     {
+      "id": "cat-living",
+      "navLabel": "Lifestyle",
+      "tag": "Reels",
+      "title": "Lifestyle",
+      "layout": "reel",
+      "clips": []
+    },
+    {
       "id": "cat-fashion",
       "navLabel": "Fashion",
       "tag": "Reels",
