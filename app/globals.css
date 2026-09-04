@@ -218,6 +218,22 @@ p.lead{ font-size:21px; line-height:1.7; letter-spacing:-.01em; color:var(--mute
 
 .reel-strip{ grid-column:1/-1; align-self:start; display:grid; grid-template-columns:repeat(4,1fr); gap:var(--sp-md); }
 .reel-strip .clip{ aspect-ratio:9/16; }
+/* In a four-column grid every clip is one reel wide, which leaves a landscape
+   clip about a third the height of the reels beside it. As soon as one is
+   present the strip shares a height instead and lets each width follow its
+   own shape — the wide clip reads large, a reel keeps its usual size. This
+   is the same trade the five-or-more rule below makes, so that one still
+   wins on a crowded page. */
+.reel-strip:has(.clip.wide){ display:flex; flex-wrap:wrap; align-items:flex-start; }
+/* Sized so a landscape clip and two reels sit on one row with room to spare.
+   The row's width grows with the viewport's height here, not its width, so
+   a tall narrow window is the binding case: at 53vh a 1280x800 window came
+   within 1px of wrapping. The strip still wraps rather than overflowing if
+   a page holds more than that. */
+.reel-strip:has(.clip.wide) .clip{ height:min(50vh,470px); width:auto; flex:0 0 auto; }
+@media (max-width:900px){
+  .reel-strip:has(.clip.wide) .clip{ height:auto; width:100%; }
+}
 @media (max-width:900px){ .reel-strip{ grid-template-columns:repeat(2,1fr); } }
 
 /* More than one row of reels: cap each clip's height to the available

@@ -13,11 +13,23 @@ const BLANK_POSTER =
   'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
 function Clip({ src, landscape }) {
-  const cls = 'clip' + (landscape ? ' landscape' : '') + (src ? '' : ' empty');
+  const [wide, setWide] = useState(false);
+  const cls = 'clip' + (landscape ? ' landscape' : '') + (wide ? ' wide' : '') + (src ? '' : ' empty');
   const ref = useRef(null);
   const videoRef = useRef(null);
   const [visible, setVisible] = useState(false);
   const [ready, setReady] = useState(false);
+  /* The reel slot is 9:16. A clip shot in any other shape would be cropped to
+     fit it, so once the video reports its own dimensions the slot takes that
+     shape instead and nothing is cut off. */
+  const [ratio, setRatio] = useState(null);
+
+  function readRatio(el) {
+    if (!el || !el.videoWidth || !el.videoHeight) return;
+    setRatio(`${el.videoWidth} / ${el.videoHeight}`);
+    // A wide clip in a reel-width column comes out tiny, so give it two.
+    setWide(el.videoWidth > el.videoHeight);
+  }
 
   useEffect(() => {
     if (!src || !ref.current) return;
@@ -38,11 +50,14 @@ function Clip({ src, landscape }) {
   // A cached video can reach HAVE_CURRENT_DATA before React attaches the
   // handlers below, which would leave it faded out for good.
   useEffect(() => {
-    if (visible && videoRef.current && videoRef.current.readyState >= 2) setReady(true);
+    if (visible && videoRef.current && videoRef.current.readyState >= 2) {
+      setReady(true);
+      readRatio(videoRef.current);
+    }
   }, [visible]);
 
   return (
-    <div className={cls} ref={ref}>
+    <div className={cls} ref={ref} style={!landscape && ratio ? { aspectRatio: ratio } : undefined}>
       {src ? (
         visible && (
           <video
@@ -55,8 +70,9 @@ function Clip({ src, landscape }) {
             muted
             loop
             playsInline
-            onLoadedData={() => setReady(true)}
-            onCanPlay={() => setReady(true)}
+            onLoadedMetadata={(e) => readRatio(e.currentTarget)}
+            onLoadedData={(e) => { setReady(true); readRatio(e.currentTarget); }}
+            onCanPlay={(e) => { setReady(true); readRatio(e.currentTarget); }}
           />
         )
       ) : (
