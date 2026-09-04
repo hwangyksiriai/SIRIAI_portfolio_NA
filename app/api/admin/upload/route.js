@@ -25,9 +25,7 @@ export async function GET(request) {
           ? `현재 들어와 있는 Blob 관련 변수: ${present.join(', ')}`
           : 'Blob 관련 환경변수가 하나도 없습니다 — 스토어가 이 프로젝트에 연결되지 않았습니다.',
         'Vercel > Storage에서 스토어 연결 시 "Add a read-write token env var"를 체크해야 이 변수가 생깁니다. 추가한 뒤 반드시 다시 배포해 주세요.',
-      ].join('
-
-'),
+      ].join('\n\n'),
     });
   }
   try {
