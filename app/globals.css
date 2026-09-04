@@ -195,14 +195,12 @@ p.lead{ font-size:21px; line-height:1.7; letter-spacing:-.01em; color:var(--mute
 .case-grid{
   grid-column:1/-1;  /* the clip grid is six columns; this wants all of them */
   align-self:start;  /* its row is 64px; sit on top of it rather than centre on it */
-  /* One video anchors the page at full height; two share the middle, so both
-     come down to leave the screenshot columns their room. The columns match
-     whichever it is. */
+  /* The videos are the work; they stay the size a reel is on any other page
+     however many there are, and the screenshots take what is left. */
   --hero-h:min(66vh,620px);
   margin-top:28px; display:flex; align-items:center;
   justify-content:space-between; gap:clamp(16px,2.4vw,44px);
 }
-.case-grid:has(.case-hero .clip + .clip){ --hero-h:min(52vh,490px); }
 .case-hero{ flex:0 0 auto; display:flex; align-items:center; gap:clamp(10px,1.2vw,20px); }
 .case-hero .clip{ height:var(--hero-h); width:auto; aspect-ratio:9/16; }
 /* A column is the hero's height, and each screenshot takes a share of it in
@@ -211,7 +209,7 @@ p.lead{ font-size:21px; line-height:1.7; letter-spacing:-.01em; color:var(--mute
    common width and the column fills the height exactly however many there
    are — stacking five no longer runs off the top and bottom of the page. */
 .case-side{
-  flex:1 1 0; min-width:0; max-width:30%; align-self:center;
+  flex:1 1 0; min-width:0; max-width:23%; align-self:center;
   height:var(--hero-h);
   display:flex; flex-direction:column; gap:clamp(8px,1.4vh,18px);
 }
@@ -219,6 +217,32 @@ p.lead{ font-size:21px; line-height:1.7; letter-spacing:-.01em; color:var(--mute
    margin as every other page rather than floating inside it. */
 .case-side:first-child{ align-items:flex-start; }
 .case-side:last-child{ align-items:flex-end; }
+
+/* Screenshots pasted onto a board, not a list: widths vary and each one sits
+   at its own indent, so no two edges line up down the column. The cycle is
+   three so a column of five never repeats a pattern the eye can lock onto,
+   and the indents run inward from whichever edge the column sits on. */
+/* Scaling the share rather than capping the width is what makes the sizes
+   actually differ: a smaller share is a shorter clip, and the width comes
+   back out of it in the same proportion, so the column still fills its
+   height and the screenshots no longer come out on one width. */
+.case-side .clip:nth-child(3n+2){ flex-grow:calc(0.72 / var(--clip-ratio)); }
+.case-side .clip:nth-child(3n+3){ flex-grow:calc(0.88 / var(--clip-ratio)); }
+.case-side:first-child .clip:nth-child(3n+2){ margin-left:16%; }
+.case-side:first-child .clip:nth-child(3n+3){ margin-left:6%; }
+.case-side:last-child .clip:nth-child(3n+2){ margin-right:16%; }
+.case-side:last-child .clip:nth-child(3n+3){ margin-right:6%; }
+/* The indents are what a phone has no room for; they have to be undone at the
+   specificity that set them, or the deeper desktop selector keeps winning and
+   pushes the screenshots off the right edge. */
+@media (max-width:900px){
+  .case-side:first-child .clip:nth-child(3n+2),
+  .case-side:first-child .clip:nth-child(3n+3),
+  .case-side:last-child .clip:nth-child(3n+2),
+  .case-side:last-child .clip:nth-child(3n+3){ margin-left:0; margin-right:0; }
+  .case-side .clip:nth-child(3n+2),
+  .case-side .clip:nth-child(3n+3){ flex-grow:0; }
+}
 .case-side .clip{
   --clip-ratio:1.6;  /* a profile card, until the image reports its own */
   flex:calc(1 / var(--clip-ratio)) 1 0; min-height:0;
@@ -228,8 +252,11 @@ p.lead{ font-size:21px; line-height:1.7; letter-spacing:-.01em; color:var(--mute
 /* Stacked on a phone: three columns side by side leave nothing readable. */
 @media (max-width:900px){
   .case-grid{ flex-direction:column; align-items:stretch; gap:14px; }
-  .case-side{ max-width:100%; height:auto; }
-  .case-side .clip{ flex:0 0 auto; width:100%; }
+  /* align-self:center and flex-basis:0 are cross-axis and main-axis rules that
+     swap meaning once the grid turns into a column: they collapsed the sides
+     to their content, 5px wide and 16px tall. */
+  .case-side{ max-width:100%; height:auto; align-self:stretch; flex:0 0 auto; }
+  .case-side .clip{ flex:0 0 auto !important; width:100%; }
   .case-hero{ justify-content:center; }
   .case-hero .clip{ height:auto; width:100%; }
 }
