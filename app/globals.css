@@ -224,7 +224,10 @@ p.lead{ font-size:21px; line-height:1.7; letter-spacing:-.01em; color:var(--mute
    own shape — the wide clip reads large, a reel keeps its usual size. This
    is the same trade the five-or-more rule below makes, so that one still
    wins on a crowded page. */
-.reel-strip:has(.clip.wide){ display:flex; align-items:flex-start; }
+/* When the height ceiling stops the row short of the strip's width, the left
+   over goes into the gaps rather than trailing off the right-hand end, so
+   the last clip lines up with the edge every other page's clips sit on. */
+.reel-strip:has(.clip.wide){ display:flex; align-items:flex-start; justify-content:space-between; }
 /* Each clip grows in proportion to its own shape (set inline from the video's
    dimensions; a reel that has not loaded yet falls back to 9:16), so the row
    fills the strip's width and every clip lands on the same height. The cap
@@ -232,10 +235,15 @@ p.lead{ font-size:21px; line-height:1.7; letter-spacing:-.01em; color:var(--mute
    shrink keeping their shape, and the row stops short of the full width
    rather than overflowing downward. */
 .reel-strip:has(.clip.wide) .clip{
-  flex:0.5625 1 0; min-width:0; width:auto; height:auto; max-width:calc(64vh * 0.5625);
+  --clip-ratio:0.5625;  /* a reel, until the video reports its own shape */
+  flex:var(--clip-ratio) 1 0; min-width:0; width:auto; height:auto;
+  max-width:calc(64vh * var(--clip-ratio));
 }
+/* One column on a phone: side by side, three clips of mixed shape come out
+   too small to read. */
 @media (max-width:900px){
-  .reel-strip:has(.clip.wide) .clip{ height:auto; width:100%; }
+  .reel-strip:has(.clip.wide){ flex-direction:column; }
+  .reel-strip:has(.clip.wide) .clip{ flex:0 0 auto; width:100%; max-width:100%; height:auto; }
 }
 @media (max-width:900px){ .reel-strip{ grid-template-columns:repeat(2,1fr); } }
 
