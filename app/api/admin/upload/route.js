@@ -12,9 +12,22 @@ export async function GET(request) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    /* Naming the Blob variables this deployment does have separates "the store
+       was never connected" from "it was connected without the read-write token"
+       from "the token landed under another name". Names only — the values are
+       credentials and never leave the server. */
+    const present = Object.keys(process.env).filter((k) => k.includes('BLOB')).sort();
     return NextResponse.json({
       ok: false,
-      error: 'Blob 스토어가 연결되어 있지 않습니다 (BLOB_READ_WRITE_TOKEN 없음). Vercel 프로젝트 > Storage에서 Blob 스토어를 연결한 뒤 다시 배포해 주세요.',
+      error: [
+        'BLOB_READ_WRITE_TOKEN이 이 배포에 없습니다.',
+        present.length
+          ? `현재 들어와 있는 Blob 관련 변수: ${present.join(', ')}`
+          : 'Blob 관련 환경변수가 하나도 없습니다 — 스토어가 이 프로젝트에 연결되지 않았습니다.',
+        'Vercel > Storage에서 스토어 연결 시 "Add a read-write token env var"를 체크해야 이 변수가 생깁니다. 추가한 뒤 반드시 다시 배포해 주세요.',
+      ].join('
+
+'),
     });
   }
   try {
