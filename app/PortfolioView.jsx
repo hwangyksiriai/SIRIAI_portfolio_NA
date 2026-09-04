@@ -26,10 +26,20 @@ function Clip({ src, landscape }) {
 
   function readRatio(el) {
     if (!el || !el.videoWidth || !el.videoHeight) return;
-    setRatio(`${el.videoWidth} / ${el.videoHeight}`);
-    // A wide clip in a reel-width column comes out tiny, so give it two.
+    setRatio(el.videoWidth / el.videoHeight);
     setWide(el.videoWidth > el.videoHeight);
   }
+
+  /* Growing each clip in proportion to its own width-to-height means the row
+     fills the strip exactly and every clip still lands on the same height,
+     since a width proportional to the ratio divides back out to a constant.
+     The ceiling has to be a width, not a height: capping the height leaves the
+     flex-assigned width in place, and the video gets cropped to the difference —
+     the very thing this is here to stop. Capping width in proportion to the
+     ratio holds the shape and keeps every clip on a common height. */
+  const shape = ratio
+    ? { aspectRatio: String(ratio), flexGrow: ratio, maxWidth: `calc(${CLIP_MAX_HEIGHT} * ${ratio})` }
+    : undefined;
 
   useEffect(() => {
     if (!src || !ref.current) return;
@@ -57,7 +67,7 @@ function Clip({ src, landscape }) {
   }, [visible]);
 
   return (
-    <div className={cls} ref={ref} style={!landscape && ratio ? { aspectRatio: ratio } : undefined}>
+    <div className={cls} ref={ref} style={landscape ? undefined : shape}>
       {src ? (
         visible && (
           <video
@@ -97,6 +107,10 @@ const MARQUEE_BRANDS = {};
 function marqueeBrandsFor(id) {
   return pageNumber(id) > 1 ? MARQUEE_BRANDS[baseCategoryId(id)] : undefined;
 }
+
+/* How tall a clip may get on a page that mixes shapes. Set from the space a
+   page has under its heading, so the row never runs off the bottom. */
+const CLIP_MAX_HEIGHT = '64vh';
 
 const MARQUEE_SPEED = 92; // px/sec, matching the siriai.co.kr band
 

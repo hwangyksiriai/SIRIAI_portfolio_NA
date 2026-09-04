@@ -224,13 +224,16 @@ p.lead{ font-size:21px; line-height:1.7; letter-spacing:-.01em; color:var(--mute
    own shape — the wide clip reads large, a reel keeps its usual size. This
    is the same trade the five-or-more rule below makes, so that one still
    wins on a crowded page. */
-.reel-strip:has(.clip.wide){ display:flex; flex-wrap:wrap; align-items:flex-start; }
-/* Sized so a landscape clip and two reels sit on one row with room to spare.
-   The row's width grows with the viewport's height here, not its width, so
-   a tall narrow window is the binding case: at 53vh a 1280x800 window came
-   within 1px of wrapping. The strip still wraps rather than overflowing if
-   a page holds more than that. */
-.reel-strip:has(.clip.wide) .clip{ height:min(50vh,470px); width:auto; flex:0 0 auto; }
+.reel-strip:has(.clip.wide){ display:flex; align-items:flex-start; }
+/* Each clip grows in proportion to its own shape (set inline from the video's
+   dimensions; a reel that has not loaded yet falls back to 9:16), so the row
+   fills the strip's width and every clip lands on the same height. The cap
+   stops a wide, short window from pushing the row off the page: the clips
+   shrink keeping their shape, and the row stops short of the full width
+   rather than overflowing downward. */
+.reel-strip:has(.clip.wide) .clip{
+  flex:0.5625 1 0; min-width:0; width:auto; height:auto; max-width:calc(64vh * 0.5625);
+}
 @media (max-width:900px){
   .reel-strip:has(.clip.wide) .clip{ height:auto; width:100%; }
 }
