@@ -195,15 +195,22 @@ p.lead{ font-size:21px; line-height:1.7; letter-spacing:-.01em; color:var(--mute
 .case-grid{
   grid-column:1/-1;  /* the clip grid is six columns; this wants all of them */
   align-self:start;  /* its row is 64px; sit on top of it rather than centre on it */
-  /* 64vh is the height a reel resolves to on any other page, where the cap is
-     written as a width, calc(64vh * ratio). Matching it here puts an F&B
-     video on exactly the size it would be anywhere else. */
-  --hero-h:64vh;
-  margin-top:28px; display:flex; align-items:center;
+  /* A reel on a four-up page is (row - three 16px gaps) / 4 wide. Naming that
+     here lets a video in the middle measure the same as one anywhere else,
+     and it tracks the page width without restating it, since percentages on
+     flex-basis resolve against this row. */
+  --reel-w:calc((100% - 48px) / 4);
+  /* .clip-grid already carries the gap under the heading; a second one here
+     started this page 28px lower than every other. */
+  display:flex; align-items:center;
   justify-content:space-between; gap:clamp(16px,2.4vw,44px);
 }
-.case-hero{ flex:0 0 auto; display:flex; align-items:center; gap:clamp(10px,1.2vw,20px); }
-.case-hero .clip{ height:var(--hero-h); width:auto; aspect-ratio:9/16; }
+.case-hero{ flex:0 0 var(--reel-w); display:flex; align-items:center; gap:16px; }
+/* Two videos take two reels and the gap between them. */
+.case-grid:has(.case-hero .clip + .clip) .case-hero{
+  flex-basis:calc((100% - 48px) / 2 + 16px);
+}
+.case-hero .clip{ flex:1 1 0; min-width:0; width:auto; height:auto; aspect-ratio:9/16; }
 /* Each screenshot is sized from its width and takes whatever height its own
    shape gives. Driving the height instead — a share of the column — meant a
    width clamped by the column left the box on a different ratio than the
