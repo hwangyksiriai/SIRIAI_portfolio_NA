@@ -12,7 +12,11 @@ const BRAND_LOGO = '/media/brand/logo-white.png';
 const BLANK_POSTER =
   'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
+/* Uploads already accept PNG and JPEG, so a source can be either. */
+const IMAGE_SRC = /\.(png|jpe?g|webp|gif|avif)(\?|$)/i;
+
 function Clip({ src, landscape }) {
+  const isImage = !!src && IMAGE_SRC.test(src);
   const [wide, setWide] = useState(false);
   const cls = 'clip' + (landscape ? ' landscape' : '') + (wide ? ' wide' : '') + (src ? '' : ' empty');
   const ref = useRef(null);
@@ -25,9 +29,12 @@ function Clip({ src, landscape }) {
   const [ratio, setRatio] = useState(null);
 
   function readRatio(el) {
-    if (!el || !el.videoWidth || !el.videoHeight) return;
-    setRatio(el.videoWidth / el.videoHeight);
-    setWide(el.videoWidth > el.videoHeight);
+    if (!el) return;
+    const w = el.videoWidth || el.naturalWidth;
+    const h = el.videoHeight || el.naturalHeight;
+    if (!w || !h) return;
+    setRatio(w / h);
+    setWide(w > h);
   }
 
   /* The stylesheet does the sizing off --clip-ratio; passing the number rather
@@ -60,10 +67,26 @@ function Clip({ src, landscape }) {
     }
   }, [visible]);
 
+  // The observer skips a video source; an image needs the same guard, since a
+  // cached one can finish decoding before React binds onLoad.
+  useEffect(() => {
+    if (!visible || !isImage || !ref.current) return;
+    const img = ref.current.querySelector('img');
+    if (img && img.complete) { setReady(true); readRatio(img); }
+  }, [visible, isImage]);
+
   return (
     <div className={cls} ref={ref} style={landscape ? undefined : shape}>
       {src ? (
-        visible && (
+        visible && (isImage ? (
+          <img
+            className={'fill' + (ready ? ' ready' : '')}
+            src={src}
+            alt=""
+            loading="lazy"
+            onLoad={(e) => { setReady(true); readRatio(e.currentTarget); }}
+          />
+        ) : (
           <video
             ref={videoRef}
             className={'fill' + (ready ? ' ready' : '')}
@@ -78,7 +101,7 @@ function Clip({ src, landscape }) {
             onLoadedData={(e) => { setReady(true); readRatio(e.currentTarget); }}
             onCanPlay={(e) => { setReady(true); readRatio(e.currentTarget); }}
           />
-        )
+        ))
       ) : (
         <span className="slot-msg"><span className="plus">+</span><span className="label">준비중</span></span>
       )}
@@ -214,6 +237,34 @@ function RegionToggle({ regions, active, onChange }) {
   );
 }
 
+/* A campaign shown as one page: the videos in the middle, the screenshots that
+   go with them stacked either side. Where the first video sits in the clip list
+   is what splits the screenshots — those before it go left, those after go
+   right — so the admin arranges the page by dragging, with no extra controls. */
+function CaseLayout({ clips }) {
+  const filled = clips.filter(Boolean);
+  const isImage = (src) => IMAGE_SRC.test(src);
+  const heroes = filled.filter((src) => !isImage(src));
+  const firstHero = filled.findIndex((src) => !isImage(src));
+  const split = firstHero === -1 ? 0 : firstHero;
+  const left = filled.slice(0, split).filter(isImage);
+  const right = filled.slice(split).filter(isImage);
+
+  return (
+    <div className="case-grid">
+      <div className="case-side">
+        {left.map((src, i) => <Clip key={src + i} src={src} />)}
+      </div>
+      <div className="case-hero">
+        {(heroes.length ? heroes : [null]).map((src, i) => <Clip key={(src || 'x') + i} src={src} />)}
+      </div>
+      <div className="case-side">
+        {right.map((src, i) => <Clip key={src + i} src={src} />)}
+      </div>
+    </div>
+  );
+}
+
 function CategorySection({ cat, idx }) {
   const hasRegions = Array.isArray(cat.regions) && cat.regions.length > 0;
   const [activeRegion, setActiveRegion] = useState(hasRegions ? cat.regions[0].key : null);
@@ -245,7 +296,9 @@ function CategorySection({ cat, idx }) {
         )}
       </div>
       <div className="clip-grid">
-        {cat.layout === 'travel' ? (
+        {cat.layout === 'case' ? (
+          <CaseLayout clips={clips} />
+        ) : cat.layout === 'travel' ? (
           <div className="travel-grid">
             {[0, 1].map((colIndex) => {
               const half = Math.ceil(clips.length / 2);
