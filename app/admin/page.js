@@ -192,7 +192,9 @@ export default function AdminPage() {
         uploaded.push(blob.url);
       } catch (err) {
         console.error('upload failed', file.name, err);
-        alert(`업로드 실패: ${file.name}`);
+        alert(`업로드 실패: ${file.name}
+
+${err?.message || err}`);
       }
       setUploadingCount((c) => c - 1);
     }
@@ -211,7 +213,10 @@ export default function AdminPage() {
     if (res.ok) {
       setSavedAt(new Date().toLocaleTimeString('ko-KR'));
     } else {
-      alert('저장에 실패했습니다');
+      const reason = await res.json().then((d) => d.error).catch(() => null);
+      alert(`저장에 실패했습니다${reason ? `
+
+${reason}` : ` (${res.status})`}`);
     }
   }
 

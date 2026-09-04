@@ -23,6 +23,12 @@ export async function PUT(request) {
   if (!config || !Array.isArray(config.categories)) {
     return NextResponse.json({ error: 'invalid config shape' }, { status: 400 });
   }
-  await saveConfig(config);
+  try {
+    await saveConfig(config);
+  } catch (error) {
+    // Almost always a missing or unreadable Blob store; either way the admin
+    // needs the reason, not just "save failed".
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
   return NextResponse.json({ ok: true });
 }
