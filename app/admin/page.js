@@ -192,9 +192,18 @@ export default function AdminPage() {
         uploaded.push(blob.url);
       } catch (err) {
         console.error('upload failed', file.name, err);
+        // The SDK reports every token failure as the same opaque message, so
+        // ask the route what went wrong. One bad file means the rest will fail
+        // the same way, so stop rather than stacking identical alerts.
+        const reason = await fetch('/api/admin/upload')
+          .then((r) => r.json())
+          .then((d) => d.error)
+          .catch(() => null);
+        setUploadingCount(0);
         alert(`업로드 실패: ${file.name}
 
-${err?.message || err}`);
+${reason || err?.message || err}`);
+        break;
       }
       setUploadingCount((c) => c - 1);
     }
