@@ -406,8 +406,8 @@ export default function PortfolioView({ config }) {
         {/* 03 SEGMENTS */}
         <section className="page">
           <h1 className="disp" style={{ fontSize: 'clamp(34px,4vw + 3vh,68px)', marginTop: '48px' }}>Our Core<br />Campaign Segments</h1>
-          <p className="lead">SIRIAI는 다양한 카테고리의 캠페인을 폭넓게 수행하며,<br className="brk" />브랜드별 니즈에 맞춘 인플루언서 협업을 설계합니다.</p>
-          <div className="seg-grid">
+          <p className="lead">SIRIAI는 북미 현지 크리에이터 풀을 기반으로, <br className="brk" />브랜드별 니즈에 맞춘 시딩 캠페인을 설계합니다.</p>
+          <div className={'seg-grid' + (navCategories.length <= 4 ? ' seg-grid-compact' : '')}>
             {navCategories.map((cat, i) => (
               <a className="seg-cell" href={`#${cat.id}`} key={cat.id} onClick={(e) => { e.preventDefault(); goToCategory(cat.id); }}>
                 <SegIcon id={cat.id} />

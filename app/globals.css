@@ -164,6 +164,20 @@ p.lead{ font-size:21px; line-height:1.7; letter-spacing:-.01em; color:var(--mute
 @media (max-width:900px){ .seg-grid{ width:100%; grid-template-columns:repeat(3,1fr); } }
 @media (max-width:720px){ .seg-grid{ grid-template-columns:repeat(2,1fr); gap:28px 20px; padding:16px 0; } }
 @media (max-height:760px){ .seg-grid{ gap:20px 32px; } }
+/* Four segments or fewer square up better than a 3-up row with a ragged last
+   line. Two columns leave each cell far more room than the 3-up grid gave
+   ten of them, so the icon and label scale with it — at the old size four
+   cells read as a small cluster adrift in the page's right half. */
+.seg-grid-compact{ grid-template-columns:repeat(2,1fr); gap:clamp(36px,7vh,76px) 40px; }
+@media (max-width:900px){ .seg-grid-compact{ grid-template-columns:repeat(2,1fr); } }
+.seg-grid-compact .seg-cell{ gap:20px; }
+.seg-grid-compact .seg-cell svg{ width:42px; height:42px; stroke-width:1.15; }
+.seg-grid-compact .seg-cell .name{ font-size:19px; }
+@media (max-width:720px){
+  .seg-grid-compact .seg-cell{ gap:14px; }
+  .seg-grid-compact .seg-cell svg{ width:32px; height:32px; }
+  .seg-grid-compact .seg-cell .name{ font-size:15px; }
+}
 .seg-cell{
   display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:16px; text-decoration:none; cursor:pointer;
   text-align:center; transition:opacity .15s ease;

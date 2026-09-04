@@ -17,22 +17,6 @@
       "clips": []
     },
     {
-      "id": "cat-living",
-      "navLabel": "Lifestyle",
-      "tag": "Reels",
-      "title": "Lifestyle",
-      "layout": "reel",
-      "clips": []
-    },
-    {
-      "id": "cat-travel",
-      "navLabel": "Travel & Tourism",
-      "tag": "Youtube",
-      "title": "Travel & Tourism",
-      "layout": "travel",
-      "clips": []
-    },
-    {
       "id": "cat-fnb",
       "navLabel": "F&B",
       "tag": "Reels",
@@ -45,38 +29,6 @@
       "navLabel": "Artist Promotion",
       "tag": "Reels",
       "title": "Artist Promotion",
-      "layout": "reel",
-      "clips": []
-    },
-    {
-      "id": "cat-celebrity",
-      "navLabel": "Celebrity & Magazine",
-      "tag": "Reels",
-      "title": "Celebrity & Magazine",
-      "layout": "reel",
-      "clips": []
-    },
-    {
-      "id": "cat-health",
-      "navLabel": "Family & Kids",
-      "tag": "Reels",
-      "title": "Family & Kids",
-      "layout": "reel",
-      "clips": []
-    },
-    {
-      "id": "cat-medical",
-      "navLabel": "Medical",
-      "tag": "Reels",
-      "title": "Medical",
-      "layout": "reel",
-      "clips": []
-    },
-    {
-      "id": "cat-popup",
-      "navLabel": "Offline",
-      "tag": "Reels",
-      "title": "Offline",
       "layout": "reel",
       "clips": []
     }
